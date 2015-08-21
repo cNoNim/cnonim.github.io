@@ -1,0 +1,19 @@
+locale: en
+title:  cNoNim
+author: Oleg Ageev
+email:  my@cnonim.name
+url:    //cnonim.github.io
+theme:  readable
+
+timezone: Europe/Moscow
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+
+defaults:
+  -
+    scope:
+      path: ""
+    values:
+      layout: default

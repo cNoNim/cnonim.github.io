@@ -1,0 +1,33 @@
+{%capture head%}
+<!--[if gte IE 9]-->
+<link rel="stylesheet" href="{{site.data.libs.bootstrap}}/css/bootstrap{%unless site.data.development%}.min{%endunless%}.css">
+{%if site.theme%}
+<link rel="stylesheet" href="{{site.data.themes[site.theme]}}{%unless site.data.development%}.min{%endunless%}.css" title="{{site.theme|capitalize}}">
+{%else%}
+<link rel="stylesheet" href="{{site.data.themes[default]}}{%unless site.data.development%}.min{%endunless%}.css" title="Defaul">
+{%endif%}
+<script src="{{site.data.libs.modernizr}}/modernizr{%unless site.data.development%}.min{%endunless%}.js"></script>
+<style>body { padding-top: 70px; }</style>
+<!--<![endif]-->
+{%endcapture%}{%include header.html%}
+<!--[if lt IE 9]>
+<p id="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+<!--[if gte IE 9]-->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">{{site.title}}</a>
+    </div>
+  </div>
+</nav>
+<main class="container">
+  {{content}}
+</main>
+<footer class="container">
+  <small>&copy; Oleg Ageev</small>
+</footer>
+<script src="{{site.data.libs.jquery}}/jquery{%unless site.data.development%}.min{%endunless%}.js"></script>
+<script src="{{site.data.libs.bootstrap}}/js/bootstrap{%unless site.data.development%}.min{%endunless%}.js"></script>
+<!-- <![endif]-->
+{%include footer.html%}
