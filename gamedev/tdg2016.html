@@ -67,7 +67,7 @@ header {
     <option selected='selected' value='-1'>Viewer</option>
     <optgroup id='members' label='Members:'>
     </optgroup>
-  </select>  
+  </select>
 </header>
 <div id='inputs'>
   <table id='scores'></table>
@@ -84,7 +84,7 @@ header {
     , $members = document.getElementById('members')
     , $scores = document.getElementById('scores')
     , $plain = document.getElementById('plain');
-  
+
   for (var i in items) {
     var member = members[items[i]] = {};
     member.id = i|0;
@@ -100,7 +100,7 @@ header {
     $input.max = 1.0;
     $input.step = 0.01;
     $input.value = 0.5;
-    var $span = member.span = document.createElement('span');    
+    var $span = member.span = document.createElement('span');
     var $row = member.row = document.createElement('tr');
     var $td = document.createElement('td');
     $td.innerText = member.name;
@@ -136,12 +136,12 @@ header {
     var count = items.length;
     var selected = $who.value|0;
     var sum= (selected == -1) ? (50 * count) : (50 * (count - 1));
-    
+
     var values=[];
     var scores=[];
     var indices=[];
     var total=0;
-    
+
     for(var i in members) {
       var member = members[i];
       if (member.id === selected) continue;
@@ -168,18 +168,18 @@ header {
     }
 
     var plain = {};
-    
+
     plain.scores = {};
 
     for(var i in members) {
       var member = members[i];
       if (member.id === selected) {
         plain.who = member.name;
-        continue; 
+        continue;
       }
       var value = Math.round(scores[member.id] * 100.0) / 100.0;
       member.input.value = value / 100.0;
-      member.span.innerText = (plain.scores[member.name] = value);    
+      member.span.innerText = (plain.scores[member.name] = value);
     }
     $plain.innerText = JSON.stringify(plain, null, 2);
   }
@@ -215,9 +215,9 @@ header {
 , 'Kupul'
 , 'lonki-lomki'
 , 'Madware'
+, 'Roman Shuvalov'
 , 'Sheff'
 , 'SpiritFalcoN'
-, 'Роман Шувалов'
 ]);
 </script>
 </body>
