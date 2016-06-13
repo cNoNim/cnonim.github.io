@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Gamedev TDG 2016</title>
+<style>
+html { font-size: 16px; }
+body { font-size: 62.5%; }
+html, body { width: 100%; }
+* { margin: 0; padding: 0; font-size: inherit; }
+header {
+  font-size: 1.6em;
+  border: 0.1em solid black;
+  border-radius: 0.5em;
+  padding: 1em;
+}
+#inputs {
+  position: relative;
+  font-size: 1.6em;
+}
+#inputs #scores {
+  position: absolute;
+  left: 0; right: 50%;
+  border: 0.1em solid black;
+  border-radius: 0.5em;
+  padding: 1em;
+}
+#inputs #scores td {
+  padding: 0.2em;
+}
+#inputs #scores .score {
+  width: 100%;
+}
+#inputs #scores .name {
+  white-space: nowrap;
+}
+#inputs #scores .score input {
+  width: 100%;
+}
+#inputs #plain {
+  position: absolute;
+  left: 50%; right: 0;
+  border: 0.1em solid black;
+  border-radius: 0.5em;
+  padding: 1em;
+}
+#inputs #plain::after {
+  content: 'click to copy';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  border: 0.1em solid black;
+  border-radius: 0.5em;
+  padding: 1em;
+}
+#inputs #plain:hover::after {
+  color: white;
+  background-color: black;
+}
+</style>
+</head>
+
+<body>
+<header>
+  <label for='who'>Who:</label>
+  <select id='who'>
+    <option selected='selected' value='-1'>Viewer</option>
+    <optgroup id='members' label='Members:'>
+    </optgroup>
+  </select>  
+</header>
+<div id='inputs'>
+  <table id='scores'></table>
+  <pre id='plain'></pre>
+</div>
+
+<script>
+
+(function (items) {
+
+  var members = {};
+
+  var $who = document.getElementById('who')
+    , $members = document.getElementById('members')
+    , $scores = document.getElementById('scores')
+    , $plain = document.getElementById('plain');
+  
+  for (var i in items) {
+    var member = members[items[i]] = {};
+    member.id = i|0;
+    member.name = items[member.id];
+    var $opt = member.opt = document.createElement('option');
+    $opt.value = member.id;
+    $opt.innerText = member.name;
+    $members.appendChild($opt);
+    var $input = member.input = document.createElement('input');
+    $input.onkeyup = $input.onchange = calcScores;
+    $input.type = 'range';
+    $input.min = 0.0;
+    $input.max = 1.0;
+    $input.step = 0.01;
+    $input.value = 0.5;
+    var $span = member.span = document.createElement('span');    
+    var $row = member.row = document.createElement('tr');
+    var $td = document.createElement('td');
+    $td.innerText = member.name;
+    $td.className = 'name';
+    $row.appendChild($td);
+    $td = document.createElement('td');
+    $td.appendChild($input);
+    $td.className = 'score';
+    $row.appendChild($td);
+    $td = document.createElement('td');
+    $td.appendChild($span);
+    $td.className = 'value';
+    $row.appendChild($td);
+  }
+
+  $plain.onclick = function () { copyToClipboard(JSON.stringify(JSON.parse(this.innerText))); };
+
+  ($who.onkeyup = $who.onchange = function () {
+    var selected = $who.value|0;
+    $scores.innerHTML = '';
+    for (var i in members) {
+      var member = members[i];
+      if (member.id === selected) continue;
+      $scores.appendChild(member.row);
+    }
+    calcScores();
+  })();
+
+  return;
+
+  function calcScores()
+  {
+    var count = items.length;
+    var selected = $who.value|0;
+    var sum= (selected == -1) ? (50 * count) : (50 * (count - 1));
+    
+    var values=[];
+    var scores=[];
+    var indices=[];
+    var total=0;
+    
+    for(var i in members) {
+      var member = members[i];
+      if (member.id === selected) continue;
+      indices[member.id] = member.id;
+      total += (values[member.id] = +member.input.value);
+      scores[member.id] = values[member.id] * sum;
+    }
+
+    var roundoff = sum;
+    for(var i in scores) {
+      if (i === selected) continue;
+      roundoff -= (scores[i] = (scores[i]/total)|0);
+    }
+
+    indices.sort(function(l,r){ return scores[l] - scores[r]; });
+    for(var i in indices) {
+      if (roundoff <= 0) break;
+      if (i === selected) {
+        ++roundoff;
+        continue;
+      }
+      ++scores[indices[i]];
+      --roundoff;
+    }
+
+    var plain = {};
+    
+    plain.scores = {};
+
+    for(var i in members) {
+      var member = members[i];
+      if (member.id === selected) {
+        plain.who = member.name;
+        continue; 
+      }
+      var value = Math.round(scores[member.id] * 100.0) / 100.0;
+      member.input.value = value / 100.0;
+      member.span.innerText = (plain.scores[member.name] = value);    
+    }
+    $plain.innerText = JSON.stringify(plain, null, 2);
+  }
+
+  function copyToClipboard(text) {
+    window.prompt("Press [Ctrl+C] to copy to clipboar and [Enter]", text);
+  }
+
+  function shuffle(array) {
+    var currentIndex = array.length
+      , temporaryValue
+      , randomIndex;
+
+    while (0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+
+    return array;
+  }
+})(
+[ '122'
+, 'Chupakaber'
+, 'CStalker'
+, 'DarkDes'
+, 'Ducat'
+, 'eugeneloza'
+, 'FordPerfect'
+, 'kulikov_dev'
+, 'Kupul'
+, 'lonki-lomki'
+, 'Madware'
+, 'Sheff'
+, 'SpiritFalcoN'
+, 'Роман Шувалов'
+]);
+</script>
+</body>
+</html>
