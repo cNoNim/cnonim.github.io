@@ -121,7 +121,7 @@ header {
     member.value = value;
     var $opt = member.opt = document.createElement('option');
     $opt.value = member.id;
-    $opt.innerText = member.name;
+    $opt.innerHTML = member.name;
     $members.appendChild($opt);
     var $input = member.input = document.createElement('input');
     $input.onkeyup = $input.onchange = (function (member) {
@@ -152,7 +152,7 @@ header {
     $span.size = 3;
     var $row = member.row = document.createElement('li');
     var $div = document.createElement('div');
-    $div.innerText = member.name;
+    $div.innerHTML = member.name;
     $div.className = 'name';
     $row.appendChild($div);
     $div = document.createElement('div');
@@ -165,7 +165,7 @@ header {
     $row.appendChild($div);
   }
 
-  $plain.onclick = function () { copyToClipboard(JSON.stringify(JSON.parse(this.innerText))); };
+  $plain.onclick = function () { copyToClipboard(JSON.stringify(JSON.parse(this.innerHTML))); };
 
   ($who.onkeyup = $who.onchange = function () {
     var selected = $who.value|0;
@@ -223,7 +223,7 @@ header {
       member.value = scores[member.id];
       member.input.value = member.span.value = (plain.scores[member.name] = member.value);
     }
-    $plain.innerText = JSON.stringify(plain, null, 2);
+    $plain.innerHTML = JSON.stringify(plain, null, 2);
   }
 
   function copyToClipboard(text) {
