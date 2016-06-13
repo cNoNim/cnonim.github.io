@@ -200,17 +200,12 @@ header {
 
     var roundoff = sum;
     for(var i in scores) {
-      if (i === selected) continue;
       roundoff -= (scores[i] = (scores[i]/total)|0);
     }
 
     indices.sort(function(l,r){ return scores[l] - scores[r]; });
     for(var i in indices) {
       if (roundoff <= 0) break;
-      if (i === selected) {
-        ++roundoff;
-        continue;
-      }
       ++scores[indices[i]];
       --roundoff;
     }
