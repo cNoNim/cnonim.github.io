@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Gamedev TDG 2016</title>
 <style>
 html { font-size: 16px; }
@@ -19,15 +20,20 @@ header {
   font-size: 1.6em;
 }
 #inputs #scores {
-  display: block;;
+  display: block;
   position: absolute;
-  left: 0; right: 50vw;
+  left: 0; right: 50%;
   border: 0.1em solid black;
   border-radius: 0.5em;
   padding: 1em;
 }
-#inputs #scores td {
+#inputs #scores li {
+  display: table-row;
+}
+#inputs #scores div {
+  display: table-cell;
   padding: 0.2em;
+  vertical-align: middle;
 }
 #inputs #scores .score {
   width: 100%;
@@ -40,7 +46,7 @@ header {
 }
 #inputs #plain {
   position: absolute;
-  left: 50vw; right: 0;
+  left: 50%; right: 0;
   border: 0.1em solid black;
   border-radius: 0.5em;
   padding: 1em;
@@ -58,6 +64,22 @@ header {
   color: white;
   background-color: black;
 }
+
+@media screen and (max-width: 1000px) {
+  #inputs #scores { right: 35%; }
+  #inputs #plain { left: 65%; }
+}
+
+@media screen and (max-width: 600px) {
+  #inputs #scores { left: 0; right: 0; position: relative; }
+  #inputs #plain { left: 0; right: 0; position: relative; }
+}
+
+@media screen and (max-width: 400px) {
+  #inputs #scores li { display: block; }
+  #inputs #scores .name { left: 0; right: 0; display: block; }
+}
+
 </style>
 </head>
 
@@ -71,7 +93,7 @@ header {
   </select>
 </header>
 <div id='inputs'>
-  <table id='scores'></table>
+  <ul id='scores'></ul>
   <pre id='plain'></pre>
 </div>
 
@@ -102,19 +124,19 @@ header {
     $input.step = 0.01;
     $input.value = 0.5;
     var $span = member.span = document.createElement('span');
-    var $row = member.row = document.createElement('tr');
-    var $td = document.createElement('td');
-    $td.innerText = member.name;
-    $td.className = 'name';
-    $row.appendChild($td);
-    $td = document.createElement('td');
-    $td.appendChild($input);
-    $td.className = 'score';
-    $row.appendChild($td);
-    $td = document.createElement('td');
-    $td.appendChild($span);
-    $td.className = 'value';
-    $row.appendChild($td);
+    var $row = member.row = document.createElement('li');
+    var $div = document.createElement('div');
+    $div.innerText = member.name;
+    $div.className = 'name';
+    $row.appendChild($div);
+    $div = document.createElement('div');
+    $div.appendChild($input);
+    $div.className = 'score';
+    $row.appendChild($div);
+    $div = document.createElement('div');
+    $div.appendChild($span);
+    $div.className = 'value';
+    $row.appendChild($div);
   }
 
   $plain.onclick = function () { copyToClipboard(JSON.stringify(JSON.parse(this.innerText))); };
