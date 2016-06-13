@@ -44,6 +44,9 @@ header {
 #inputs #scores .score input {
   width: 100%;
 }
+#inputs #scores .value input {
+  border: 0;
+}
 #inputs #plain {
   position: absolute;
   left: 50%; right: 0;
@@ -86,7 +89,7 @@ header {
 <body>
 <header>
   <label for='who'>Who:</label>
-  <select id='who'>
+  <select id='who' tabindex='0'>
     <option selected='selected' value='-1'>Viewer</option>
     <optgroup id='members' label='Members:'>
     </optgroup>
@@ -101,6 +104,9 @@ header {
 
 (function (items) {
 
+  var count = items.length;
+  var value = 50;
+  var sum= value * count;
   var members = {};
 
   var $who = document.getElementById('who')
@@ -112,18 +118,38 @@ header {
     var member = members[items[i]] = {};
     member.id = i|0;
     member.name = items[member.id];
+    member.value = value;
     var $opt = member.opt = document.createElement('option');
     $opt.value = member.id;
     $opt.innerText = member.name;
     $members.appendChild($opt);
     var $input = member.input = document.createElement('input');
-    $input.onkeyup = $input.onchange = calcScores;
+    $input.onkeyup = $input.onchange = (function (member) {
+      return function () {
+        member.value = +this.value;
+        calcScores();
+      }
+    })(member);
+    $input.tabIndex = i|0 + 1;
     $input.type = 'range';
-    $input.min = 0.0;
-    $input.max = 1.0;
-    $input.step = 0.01;
-    $input.value = 0.5;
-    var $span = member.span = document.createElement('span');
+    $input.min = 0;
+    $input.max = value * 2;
+    $input.step = 1;
+    $input.value = value;
+    var $span = member.span = document.createElement('input');
+    $span.onchange = (function (member) {
+      return function () {
+        this.value = Math.max(0, Math.min(value * 2, this.value|0));
+        member.value = +this.value;
+        calcScores();
+      }
+    })(member);
+    $span.tabIndex = $input.tabIndex + count;
+    $span.type = 'text';
+    $span.min = 0;
+    $span.max = value * 2;
+    $span.step = 1;
+    $span.size = 3;
     var $row = member.row = document.createElement('li');
     var $div = document.createElement('div');
     $div.innerText = member.name;
@@ -156,9 +182,8 @@ header {
 
   function calcScores()
   {
-    var count = items.length;
     var selected = $who.value|0;
-    var sum= (selected == -1) ? (50 * count) : (50 * (count - 1));
+    sum= value * ((selected == -1) ? count : (count - 1));
 
     var values=[];
     var scores=[];
@@ -169,7 +194,7 @@ header {
       var member = members[i];
       if (member.id === selected) continue;
       indices[member.id] = member.id;
-      total += (values[member.id] = +member.input.value);
+      total += (values[member.id] = +member.value / 100.0);
       scores[member.id] = values[member.id] * sum;
     }
 
@@ -200,9 +225,8 @@ header {
         plain.who = member.name;
         continue;
       }
-      var value = Math.round(scores[member.id] * 100.0) / 100.0;
-      member.input.value = value / 100.0;
-      member.span.innerText = (plain.scores[member.name] = value);
+      member.value = scores[member.id];
+      member.input.value = member.span.value = (plain.scores[member.name] = member.value);
     }
     $plain.innerText = JSON.stringify(plain, null, 2);
   }
