@@ -15,6 +15,8 @@ header {
   border-radius: 0.5em;
   padding: 1em;
 }
+.valid { color: green; }
+.invalid { color: red; }
 #inputs {
   position: relative;
   font-size: 1.6em;
@@ -55,7 +57,7 @@ header {
   padding: 1em;
 }
 #inputs #plain::after {
-  content: 'click to copy';
+  content: 'click to copy/paste';
   position: absolute;
   right: 0;
   bottom: 0;
@@ -165,9 +167,7 @@ header {
     $row.appendChild($div);
   }
 
-  $plain.onclick = function () { copyToClipboard(JSON.stringify(JSON.parse(this.innerHTML))); };
-
-  ($who.onkeyup = $who.onchange = function () {
+  var reset = $who.onkeyup = $who.onchange = function () {
     var selected = $who.value|0;
     $scores.innerHTML = '';
     for (var i in members) {
@@ -176,7 +176,23 @@ header {
       $scores.appendChild(member.row);
     }
     calcScores();
-  })();
+  };
+
+  $plain.onclick = function () {
+    var plain = JSON.parse(copyToClipboard(JSON.stringify(JSON.parse(this.innerHTML))));
+    var who = members[plain.who];
+    if (who) $who.value = who.id;
+    else $who.value = -1;
+    var scores = plain.scores || {};
+    for(var i in scores) {
+      var member = members[i];
+      if (member)
+        member.value = scores[i]|0;
+    }
+    reset();
+  };
+
+  reset();
 
   return;
 
@@ -214,6 +230,8 @@ header {
 
     plain.scores = {};
 
+    var invalid = false;
+
     for(var i in members) {
       var member = members[i];
       if (member.id === selected) {
@@ -222,12 +240,15 @@ header {
       }
       member.value = scores[member.id];
       member.input.value = member.span.value = (plain.scores[member.name] = member.value);
+      var valid = 0 <= member.value && member.value <= 100;
+      member.span.className = valid ? 'valid' : 'invalid';
+      invalid = invalid || !valid;
     }
-    $plain.innerHTML = JSON.stringify(plain, null, 2);
+    $plain.innerHTML = invalid ? "invalid setup" : JSON.stringify(plain, null, 2);
   }
 
   function copyToClipboard(text) {
-    window.prompt("Copy selected text ([CTRL+C]) to clipboar and press [OK]", text);
+    return window.prompt("Copy selected text to clipboar or paste new object", text);
   }
 })(
 [ '122'
