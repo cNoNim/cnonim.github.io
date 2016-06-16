@@ -179,7 +179,14 @@ header {
   };
 
   $plain.onclick = function () {
-    var plain = JSON.parse(copyToClipboard(JSON.stringify(JSON.parse(this.innerHTML))));
+    var compact;
+    try {
+      compact = JSON.parse(this.innerHTML);
+    } catch(e) {}
+    var plain;
+    try {
+      plain = JSON.parse(copyToClipboard(JSON.stringify(compact)));
+    } catch(e) { return; }
     var who = members[plain.who];
     if (who) $who.value = who.id;
     else $who.value = -1;
